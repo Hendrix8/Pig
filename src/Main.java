@@ -1,7 +1,11 @@
+import view.GUI;
+
+import java.util.Random;
+
 public class Main {
 
     public static void main(String[] args) {
-        View view = new View();
 
+        GUI view  = new GUI();
     }
 }
