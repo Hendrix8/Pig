@@ -1,37 +1,50 @@
 package view;
 
-import javax.imageio.ImageIO;
+import controller.CHOICE;
+import controller.Controller;
+import model.Player;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.Objects;
 
 public class GUI extends JFrame{
 
     // declaring the variables that will be used
+    //private enum STATE { MENU, GAME}; // these will be useful for making the menu
+    //private STATE state = STATE.MENU; // TODO: Menu
     private final int diceWidth = 100, diceHeight = 100;
     private final int screenWidth = 800, screenHeight = 600;
     private final int diceX = screenWidth / 2 - diceWidth / 2,
             dice1Y = screenHeight - 2 * diceHeight,
             dice2Y = screenHeight - 11/2 * diceHeight;
-    private JLabel score1, score2;
+    private JLabel score1, score2, turnScore1, turnScore2;
     private JLabel name1, name2;
     private JLabel turn;
     private final JButton p1Dice, p2Dice;
+    private final JButton hold1, hold2;
     private ImageIcon icon;
     private URL imageURL;
     private ClassLoader cldr;
+    private Controller game;
 
     public GUI() {
 
         // initializing components
         p1Dice = new JButton();
         p2Dice = new JButton();
+        hold1 = new JButton();
+        hold2 = new JButton();
+        turnScore1 = new JLabel();
+        turnScore2 = new JLabel();
+        turn = new JLabel();
+        score1 = new JLabel();
+        score2 = new JLabel();
         cldr = this.getClass().getClassLoader();
-
+        game = new Controller();
         initComponents();
         this.setVisible(true);
     }
@@ -47,20 +60,30 @@ public class GUI extends JFrame{
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
 
-        // initializing the dice buttons
-        initDice(p1Dice, diceX, dice1Y, diceWidth, diceHeight);
-        initDice(p2Dice,diceX, dice2Y, diceWidth,diceHeight);
 
         // initializing the score labels
         initScore(score1, dice1Y);
         initScore(score2, dice2Y);
+        initTurnScore(turnScore1, dice1Y - 50);
+        initTurnScore(turnScore2, dice2Y - 50);
+
+        // initializing the dice buttons
+        initDice(p1Dice, diceX, dice1Y, diceWidth, diceHeight, game.getP1(),game.getP2(),
+                p2Dice, hold1, hold2,turnScore1, turn);
+        initDice(p2Dice,diceX, dice2Y, diceWidth,diceHeight, game.getP2(),game.getP1(),
+                p1Dice, hold2, hold1,turnScore2,turn);
+
+        // initializing hold buttons
+        initHold(hold1, dice1Y + 25, game.getP1(), game.getP2(), turnScore1, score1,p1Dice,p2Dice,hold1, hold2,
+                turn);
+        initHold(hold2, dice2Y + 25, game.getP2(),game.getP1(), turnScore2, score2,p2Dice,p1Dice,hold2,hold1,
+                turn);
 
         // initializing name labels
         initNames(name1,dice1Y + 90 , "Player 1");
         initNames(name2, dice2Y - 90, "Player 2");
 
         // initializing turn label
-        turn = new JLabel();
         turn.setBounds(50, screenHeight / 2 - 50, 200,100);
         turn.setForeground(Color.black);
         turn.setFont(new Font("Times", Font.PLAIN, 30));
@@ -68,6 +91,34 @@ public class GUI extends JFrame{
         this.add(turn);
 
 
+    }
+
+    private void initHold(JButton hold, int y, Player p,Player opp, JLabel turnScore, JLabel score,
+                          JButton pDice, JButton oppDice, JButton pHold, JButton oppHold, JLabel turnLabel) {
+        hold.setBounds(diceX - 100, y, 80, 50);
+        hold.setText("HOLD");
+        hold.setEnabled(true);
+        hold.addActionListener((e) -> {
+
+            p.setChoice(CHOICE.hold);
+            p.setScore(p.getScore() + p.getTurnScore());
+            p.setTurnScore(0);
+
+            score.setText("Score : " + p.getScore());
+            turnScore.setText("Turn Score : " + p.getTurnScore());
+
+            game.turnChange(p, opp,pDice, oppDice, pHold, oppHold, turnLabel);
+
+        });
+        this.add(hold);
+    }
+
+    private void initTurnScore(JLabel turnScore, int y) {
+        turnScore.setBounds(diceX + 2 * diceWidth,  y,200, diceHeight);
+        turnScore.setFont(new Font("Times", Font.PLAIN, 25));
+        turnScore.setForeground(Color.black);
+        turnScore.setText("Turn Score : 0");
+        this.add(turnScore);
     }
 
     private void initNames(JLabel name, int y,String nameText) {
@@ -80,7 +131,6 @@ public class GUI extends JFrame{
     }
 
     private void initScore(JLabel score, int y) {
-        score = new JLabel();
         score.setBounds(diceX + 2 * diceWidth, y, 200, diceHeight);
         score.setFont(new Font("Times", Font.PLAIN, 40));
         score.setForeground(Color.black);
@@ -88,27 +138,37 @@ public class GUI extends JFrame{
         this.add(score);
     }
 
-    private void initDice(JButton dice, int x, int y , int width, int height) {
+    private void initDice(JButton dice, int x, int y , int width, int height, Player p,Player opp,
+                          JButton oppDice, JButton pHold, JButton oppHold, JLabel turnScore,JLabel turn) {
         dice.setBounds(x, y, width, height);
         dice.setIcon(new ImageIcon(Objects.requireNonNull(cldr.getResource("res/dice1.png"))));
         dice.setDisabledIcon(new ImageIcon(Objects.requireNonNull(cldr.getResource("res/dice1.png"))));
         dice.setEnabled(true);
+        dice.addActionListener(new RollDiceListener(p,opp,dice,pHold,oppDice,oppHold,turnScore, turn));
         this.add(dice);
     }
 
-    public static void resize(String path, String newPath, int width, int height) throws IOException {
-        File file = new File(path);
-        BufferedImage image = ImageIO.read(file);
+    private class RollDiceListener implements ActionListener {
+        Player p, opp;
+        JButton pDice, oppDice, pHold, oppHold;
+        JLabel turnScore, turn;
 
-        BufferedImage newImage = new BufferedImage(width, height, image.getType());
+        public RollDiceListener(Player p,Player opp, JButton pDice,JButton pHold,
+                                JButton oppDice, JButton oppHold, JLabel turnScore,JLabel turn) {
+            this.p = p;
+            this.opp = opp;
+            this.pDice = pDice;
+            this.pHold = pHold;
+            this.oppDice = oppDice;
+            this.oppHold = oppHold;
+            this.turnScore = turnScore;
+            this.turn = turn;
 
-        Graphics2D g2d = newImage.createGraphics();
-        g2d.drawImage(image, 0, 0, width, height, null);
-        g2d.dispose();
+        }
 
-        String name = newPath.substring(newPath.lastIndexOf(".") + 1);
-        ImageIO.write(newImage, name, new File(newPath));
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            game.rollAction(p,opp, pDice,oppDice,pHold,oppHold, turnScore, turn);
+        }
     }
-
-
 }
