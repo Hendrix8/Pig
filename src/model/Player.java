@@ -8,6 +8,7 @@ public class Player {
     private String name;
     private CHOICE choice;
     private boolean turn;
+    private boolean firstRoll = true;
 
     public Player(String name) {
         this.dice = new Dice();
@@ -59,4 +60,13 @@ public class Player {
     public void setTurn(boolean turn) {
         this.turn = turn;
     }
+
+    public void setFirstRoll(boolean firstRoll) {
+        this.firstRoll = firstRoll;
+    }
+
+    public boolean isFirstRoll() {
+        return firstRoll;
+    }
+
 }
