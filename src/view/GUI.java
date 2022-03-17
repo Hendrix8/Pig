@@ -123,14 +123,45 @@ public class GUI extends JFrame {
         newGame.setEnabled(false);
         newGame.setVisible(false);
         newGame.addActionListener((e -> {
-            /*initComponents();
 
-            p2Dice.setEnabled(false);
-            hold2.setEnabled(false);
+            if (game.getP1().hasWon()) {
+                p2Dice.setEnabled(false);
+                hold2.setEnabled(false);
+                p1Dice.setEnabled(true);
+                hold1.setEnabled(true);
+                game.getP1().setWon(false);
+                game.getP1().setTurn(true);
+                game.getP2().setTurn(false);
+                turn.setText("Turn : " + game.getP1().getName());
+            }
+            else if (game.getP2().hasWon()){
+                p1Dice.setEnabled(false);
+                hold1.setEnabled(false);
+                p2Dice.setEnabled(true);
+                hold2.setEnabled(true);
+                game.getP2().setWon(false);
+                game.getP2().setTurn(true);
+                game.getP1().setTurn(false);
+                turn.setText("Turn : " + game.getP2().getName());
+            }
+
             game.getP1().setScore(0);
             game.getP2().setScore(0);
             game.getP1().setTurnScore(0);
-            game.getP2().setTurnScore(0);*/ //TODO: new game
+            game.getP2().setTurnScore(0); //TODO: new game
+            turnScore1.setText("Turn Score : 0");
+            turnScore2.setText("Turn Score : 0");
+            score1.setText("Score : 0");
+            score2.setText("Score : 0");
+            won1.setVisible(false);
+            won2.setVisible(false);
+            p1Dice.setIcon(new ImageIcon("src/res/dice1.png"));
+            p1Dice.setDisabledIcon(new ImageIcon("src/res/dice1.png"));
+            p2Dice.setIcon(new ImageIcon("src/res/dice1.png"));
+            p2Dice.setDisabledIcon(new ImageIcon("src/res/dice1.png"));
+            newGame.setEnabled(false);
+            newGame.setVisible(false);
+            game.setGameOver(false);
 
         }));
         this.add(newGame);
@@ -148,6 +179,7 @@ public class GUI extends JFrame {
             if (game.isGameOver()) {
                 turnLabel.setText("GAME OVER");
                 won1.setVisible(true);
+                p.setWon(true);
                 newGame.setEnabled(true); // TODO: new game herw too 
                 newGame.setVisible(true);
             }

@@ -102,7 +102,7 @@ public class Controller {
 
     public void logic(Player p, JButton pDice,JButton oppDice,
                       JButton pHold,JButton oppHold) {
-        if (p.getScore() >= 4){
+        if (p.getScore() >= 100){
             // disable buttons after game ended
             pDice.setEnabled(false);
             oppDice.setEnabled(false);

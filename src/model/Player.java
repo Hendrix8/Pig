@@ -9,7 +9,7 @@ public class Player {
     private CHOICE choice;
     private boolean turn;
     private boolean firstRoll = true;
-
+    private boolean won = false;
     public Player(String name) {
         this.dice = new Dice();
         this.name = name;
@@ -69,4 +69,11 @@ public class Player {
         return firstRoll;
     }
 
+    public void setWon(boolean won) {
+        this.won = won;
+    }
+
+    public boolean hasWon() {
+        return won;
+    }
 }
