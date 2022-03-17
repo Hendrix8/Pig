@@ -28,6 +28,7 @@ public class GUI extends JFrame {
     private JLabel won2;
     private final JButton p1Dice, p2Dice;
     private final JButton hold1, hold2;
+    private final JButton newGame;
     private ImageIcon icon;
     private URL imageURL;
     private ClassLoader cldr;
@@ -40,6 +41,7 @@ public class GUI extends JFrame {
         p2Dice = new JButton();
         hold1 = new JButton();
         hold2 = new JButton();
+        newGame = new JButton();
         turnScore1 = new JLabel();
         turnScore2 = new JLabel();
         turn = new JLabel();
@@ -112,6 +114,27 @@ public class GUI extends JFrame {
         won2.setVisible(false);
         this.add(won2);
 
+        newGame.setBounds(35, dice2Y + 130, 200,30);
+        newGame.setFont(new Font("Times", Font.PLAIN, 25));
+        newGame.setText("NEW GAME");
+        newGame.setOpaque(false);
+        newGame.setContentAreaFilled(false);
+        newGame.setBorderPainted(false);
+        newGame.setEnabled(false);
+        newGame.setVisible(false);
+        newGame.addActionListener((e -> {
+            /*initComponents();
+
+            p2Dice.setEnabled(false);
+            hold2.setEnabled(false);
+            game.getP1().setScore(0);
+            game.getP2().setScore(0);
+            game.getP1().setTurnScore(0);
+            game.getP2().setTurnScore(0);*/ //TODO: new game
+
+        }));
+        this.add(newGame);
+
     }
 
     private void initHold(JButton hold, int y, Player p, Player opp, JLabel turnScore, JLabel score,
@@ -121,10 +144,12 @@ public class GUI extends JFrame {
         hold.setEnabled(true);
         hold.addActionListener((e) -> {
             game.holdAction(p, opp, pDice, oppDice, pHold, oppHold, turnLabel, score, turnScore);
-            game.logic(p, pDice, oppDice, pHold, oppHold); //TODO: make whoWon Show
+            game.logic(p, pDice, oppDice, pHold, oppHold);
             if (game.isGameOver()) {
                 turnLabel.setText("GAME OVER");
                 won1.setVisible(true);
+                newGame.setEnabled(true); // TODO: new game herw too 
+                newGame.setVisible(true);
             }
         });
         this.add(hold);
