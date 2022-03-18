@@ -10,6 +10,7 @@ public class Player {
     private boolean turn;
     private boolean firstRoll = true;
     private boolean won = false;
+    private boolean isCPU = false;
     public Player(String name) {
         this.dice = new Dice();
         this.name = name;
@@ -75,5 +76,13 @@ public class Player {
 
     public boolean hasWon() {
         return won;
+    }
+
+    public void setCPU(boolean CPU) {
+        isCPU = CPU;
+    }
+
+    public boolean isCPU() {
+        return isCPU;
     }
 }

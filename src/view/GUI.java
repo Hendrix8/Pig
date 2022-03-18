@@ -86,10 +86,12 @@ public class GUI extends JFrame {
         playFriend.setBorderPainted(false);
         playFriend.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         playFriend.addActionListener((e -> {
+            game.setCpuON(false);
             String p1Name = JOptionPane.showInputDialog(this, "Player 1 name : ");
             String p2Name = JOptionPane.showInputDialog(this, "Player 2 name : ");
             game.getP1().setName(p1Name);
             game.getP2().setName(p2Name);
+            game.initPlayers(game.getP1().getName(), game.getP2().getName());
             name1.setText(game.getP1().getName());
             name2.setText(game.getP2().getName());
 
@@ -100,7 +102,6 @@ public class GUI extends JFrame {
             won1.setText(game.getP1().getName() + " Won!");
             won2.setText(game.getP2().getName() + " Won!");
 
-            game.initPlayers(game.getP1().getName(), game.getP2().getName());
             menu.setVisible(false);
             cpu.setVisible(false);
             cpu.setEnabled(false);
@@ -117,6 +118,34 @@ public class GUI extends JFrame {
         cpu.setContentAreaFilled(false);
         cpu.setBorderPainted(false);
         cpu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        cpu.addActionListener((e -> {
+            game.setCpuON(true);
+            String p1Name = JOptionPane.showInputDialog(this, "What is your name ? : ");
+            game.getP1().setName(p1Name);
+            game.getP2().setName("CPU");
+            game.getP2().setCPU(true);
+            game.initPlayers(game.getP1().getName(), game.getP2().getName());
+            name1.setText(game.getP1().getName());
+            name2.setText("CPU");
+
+            // initializing name labels
+            initNames(name1, dice1Y + 90, game.getP1().getName());
+            initNames(name2, dice2Y - 90, game.getP2().getName());
+            // giving won labels the names
+            won1.setText(game.getP1().getName() + " Won!");
+            won2.setText(game.getP2().getName() + " Won!");
+
+            menu.setVisible(false);
+            cpu.setVisible(false);
+            cpu.setEnabled(false);
+            playFriend.setVisible(false);
+            playFriend.setEnabled(false);
+            setVisibleComponents(true);
+            hold2.setEnabled(false);
+            hold2.setVisible(false);
+            p2Dice.setEnabled(false);
+
+        }));
         this.add(cpu);
     }
 
@@ -177,9 +206,9 @@ public class GUI extends JFrame {
                 p1Dice, hold2, hold1, turnScore2, turn);
 
         // initializing hold buttons
-        initHold(hold1, dice1Y + 25, game.getP1(), game.getP2(), turnScore1, score1, p1Dice, p2Dice, hold1, hold2,
+        initHold(hold1, dice1Y + 25, game.getP1(), game.getP2(), turnScore1,turnScore2 ,score1,score2, p1Dice, p2Dice, hold1, hold2,
                 turn, won1);
-        initHold(hold2, dice2Y + 25, game.getP2(), game.getP1(), turnScore2, score2, p2Dice, p1Dice, hold2, hold1,
+        initHold(hold2, dice2Y + 25, game.getP2(), game.getP1(), turnScore2,turnScore1, score2,score1, p2Dice, p1Dice, hold2, hold1,
                 turn, won2);
 
         // initializing turn label
@@ -253,13 +282,14 @@ public class GUI extends JFrame {
 
     }
 
-    private void initHold(JButton hold, int y, Player p, Player opp, JLabel turnScore, JLabel score,
-                          JButton pDice, JButton oppDice, JButton pHold, JButton oppHold, JLabel turnLabel, JLabel won1) {
+    private void initHold(JButton hold, int y, Player p, Player opp, JLabel turnScore,JLabel cpuTscore, JLabel score,
+                          JLabel cpuScore,JButton pDice, JButton oppDice, JButton pHold,
+                          JButton oppHold, JLabel turnLabel, JLabel won1) {
         hold.setBounds(diceX - 100, y, 80, 50);
         hold.setText("HOLD");
         hold.setEnabled(true);
         hold.addActionListener((e) -> {
-            game.holdAction(p, opp, pDice, oppDice, pHold, oppHold, turnLabel, score, turnScore);
+            game.holdAction(p, opp, pDice, oppDice, pHold, oppHold, turnLabel, score,cpuScore, turnScore,cpuTscore, game.isCpuON());
             game.logic(p, pDice, oppDice, pHold, oppHold);
             if (game.isGameOver()) {
                 turnLabel.setText("GAME OVER");
