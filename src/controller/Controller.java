@@ -4,6 +4,7 @@ import model.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class Controller {
 
@@ -15,29 +16,31 @@ public class Controller {
     private final int screenWidth = 800, screenHeight = 600;
     private final int diceWidth = 100, diceHeight = 100;
     private boolean gameOver = false;
+    private ClassLoader cldr = this.getClass().getClassLoader();
 
-    public Controller(String name1, String name2) {
+    public Controller() {
+        p1 = new Player("Player 1");
+        p2 = new Player("Player 2");
+    }
+    public void initPlayers(String name1, String name2) {
         // initializing the players
         if (name1 == null || name1.equals("")) {
-            p1 = new Player("Player 1");
+            p1.setName("Player 1");
         }
         else {
-            p1 = new Player(name1);
+            p1.setName(name1);
         }
         if (name2 == null || name2.equals("")) {
-            p2 = new Player("Player 2");
+            p2.setName("Player 2");
         }
         else {
-            p2 = new Player(name2);
+            p2.setName(name2);
 
         }
-
-
         p1.setTurn(true);
         p2.setTurn(false);
         p1.setFirstRoll(true);
         p2.setFirstRoll(false);
-
     }
 
     public void rollAction(Player p,Player opp, JButton pDice,JButton oppDice,
@@ -45,8 +48,8 @@ public class Controller {
 
         p.setChoice(CHOICE.roll); // if player presses button for dices then it is implied that the choice is to roll
         int roll = p.roll();
-        pDice.setIcon(new ImageIcon("src/res/dice" + roll + ".png"));
-        pDice.setDisabledIcon(new ImageIcon("src/res/dice" + roll + ".png"));
+        pDice.setIcon(new ImageIcon(Objects.requireNonNull(cldr.getResource("res/dice" + roll + ".png"))));
+        pDice.setDisabledIcon(new ImageIcon(Objects.requireNonNull(cldr.getResource("res/dice" + roll + ".png"))));
 
         if (roll == 1) {
             p.setTurnScore(0);
@@ -115,7 +118,6 @@ public class Controller {
         }
 
     }
-
 
     public void setP1(Player p1) {
         this.p1 = p1;

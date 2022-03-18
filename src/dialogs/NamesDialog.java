@@ -9,8 +9,7 @@ public class NamesDialog {
     public NamesDialog() {
         JFrame playersFrame = new JFrame();
 
-        GUI gui = new GUI(JOptionPane.showInputDialog(playersFrame, "Player 1 name : "),
-                JOptionPane.showInputDialog(playersFrame, "Player 2 name : "));
+        GUI gui = new GUI();
 
     }
 }
