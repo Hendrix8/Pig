@@ -12,7 +12,6 @@ import java.util.Objects;
 public class GUI extends JFrame {
 
     // declaring the variables that will be used
-    private STATE state = STATE.MENU;
     private final int diceWidth = 100, diceHeight = 100;
     private final int screenWidth = 800, screenHeight = 600;
     private final int diceX = screenWidth / 2 - diceWidth / 2,
@@ -212,6 +211,7 @@ public class GUI extends JFrame {
             int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to start a new game ?",
                     "New Game", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, icon);
             if (option == 0) {
+
                 if (game.getP1().hasWon()) {
                     p2Dice.setEnabled(false);
                     hold2.setEnabled(false);
